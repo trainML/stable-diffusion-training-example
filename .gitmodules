@@ -1,0 +1,6 @@
+[submodule "stable-diffusion-2"]
+	path = stable-diffusion-2
+	url = https://github.com/trainML/stable-diffusion-2.git
+[submodule "diffusers"]
+	path = diffusers
+	url = https://github.com/huggingface/diffusers.git
