@@ -4,7 +4,7 @@
 
 # Stable Diffusion Training Example
 
-This repository walks through how to use the [trainML platform](https://www.trainml.ai) to personalize a [stable diffusion version 2](https://github.com/trainML/stable-diffusion-2.git) model on a subject using [DreamBooth](https://arxiv.org/abs/2208.12242) and generate new images.  It utilizes the (Stable Diffusion Version 2)[https://github.com/Stability-AI/stablediffusion] inference code from [Stability-AI](https://www.stability.ai) and the DreamBooth training code from [Hugging Face's](https://huggingface.co) [diffusers project](https://github.com/huggingface/diffusers).
+This repository walks through how to use the [trainML platform](https://www.trainml.ai) to personalize a [stable diffusion version 2](https://github.com/trainML/stable-diffusion-2.git) model on a subject using [DreamBooth](https://arxiv.org/abs/2208.12242) and generate new images.  It utilizes the [Stable Diffusion Version 2](https://github.com/Stability-AI/stablediffusion) inference code from [Stability-AI](https://www.stability.ai) and the DreamBooth training code from [Hugging Face's](https://huggingface.co) [diffusers project](https://github.com/huggingface/diffusers).
 
 ### Prerequisites
 
@@ -110,7 +110,7 @@ trainml job create inference \
 'python inference.py --steps=50 --scale=7.5 --prompt "A photo of sks dog in jumping over the moon"'
 ```
 
-> The first generation make take additional time as the custom checkpoint is cached to the NVMe storage on the GPU server.  Subsequent executions with the same checkpoint will be faster.
+> The first generation may take additional time as the custom checkpoint is cached to the NVMe storage on the GPU server.  Subsequent executions with the same checkpoint will be faster.
 
 The inference job should consume ~0.05 credits for a single generation with the same settings as above.
 
