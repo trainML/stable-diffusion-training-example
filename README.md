@@ -4,14 +4,14 @@
 
 # Stable Diffusion Training Example
 
-This repository walks through how to use the [trainML platform](https://www.trainml.ai) to personalize a [stable diffusion version 2](https://github.com/trainML/stable-diffusion-2.git) model on a subject using [DreamBooth](https://arxiv.org/abs/2208.12242) and generate new images.  It utilizes the [Stable Diffusion Version 2](https://github.com/Stability-AI/stablediffusion) inference code from [Stability-AI](https://www.stability.ai) and the DreamBooth training code from [Hugging Face's](https://huggingface.co) [diffusers project](https://github.com/huggingface/diffusers).
+This repository walks through how to use the [trainML platform](https://www.trainml.ai) to personalize a [stable diffusion version 2](https://github.com/trainML/stable-diffusion-2.git) model on a subject using [DreamBooth](https://arxiv.org/abs/2208.12242) and generate new images.  It utilizes the [Stable Diffusion Version 2](https://github.com/Stability-AI/stablediffusion) inference code from [Stability-AI](https://www.stability.ai) and the DreamBooth training code from [Hugging Face's](https://huggingface.co) [diffusers project](https://github.com/huggingface/diffusers).  Running the entire example as described will consume approximately 1.5 credits ($1.50 USD).
 
 ### Prerequisites
 
 Before beginning this example, ensure that you have satisfied the following prerequisites.
 
 - A valid [trainML account](https://auth.trainml.ai/login?response_type=code&client_id=536hafr05s8qj3ihgf707on4aq&redirect_uri=https://app.trainml.ai/auth/callback) with a non-zero [credit balance](https://docs.trainml.ai/reference/billing-credits/)
-- A python virtual environment with the [trainML CLI/SDK](https://github.com/trainML/trainml-cli) installed and [configured](https://docs.trainml.ai/reference/cli-sdk#authentication).
+- A python [virtual environment](https://docs.python.org/3/library/venv.html) with the [trainML CLI/SDK](https://github.com/trainML/trainml-cli) installed and [configured](https://docs.trainml.ai/reference/cli-sdk#authentication).
 - Local connection capability [prerequisites](https://docs.trainml.ai/reference/connection-capability/#prerequisites). _Note:_ There are additional methods to [create datasets](https://docs.trainml.ai/reference/datasets/#creating-a-dataset) or [receive job outputs](https://docs.trainml.ai/reference/job-fields/#output-data) that do not require these prerequisites, but the instructions would need to be modified to utilize them. [Contact us](mailto:support@trainml.ai) if you need any help adapting them.
 
 ## Prepare the Datasets
@@ -52,7 +52,7 @@ This job should consume 0.3-0.4 credits.  Once the inference job is complete, it
 trainml dataset rename "Job - DreamBooth Regularization Image Generation" "regularization-data"
 ```
 
-> The diffusers dreambooth script can actually generate the regularization images as part of its training run.  However, we demonstrate how to generate and attach these independently so that they can be reuses across training runs.  This way, if you want to train different models for different doys, you can reuse the same "dog" regularization dataset to avoid having to regenerate it each time.
+> The diffusers dreambooth script can actually generate the regularization images as part of its training run.  However, we demonstrate how to generate and attach these independently so that they can be reused across training runs.  This way, if you want to train different models for different dogs, you can reuse the same "dog" regularization dataset to avoid having to regenerate it each time.
 
 ## Train Custom Checkpoint
 
@@ -61,7 +61,7 @@ Once the datasets are ready, create a training job with the following command:
 ```
 trainml job create training \
 --gpu-type rtx3090 \
---public-checkpoint stable-diffusion-2-1-diffuser \
+--public-checkpoint stable-diffusion-v2-1-diffuser \
 --dataset instance-data \
 --dataset regularization-data \
 --git-uri https://github.com/trainML/stable-diffusion-training-example.git \
@@ -73,7 +73,7 @@ trainml job create training \
 './dreambooth-train.sh --steps=800 --images=200 "a photo of dog" "a photo of sks dog"'
 ```
 
-The training job will use the public `stable-diffusion-2-1-diffuser` checkpoint as a starting point to train a new custom checkpoint on the attached instance data.  The `--images` parameter must contain the same number of images in the regularization dataset or it will error due to a read-only file system.  The first positional argument is the "class prompt" and the second positional argument is the "instance prompt".  The second positional argument is the "instance prompt".  This is the string you will later use on the trained model to ensure the target appears in the generated image.  The `--steps` parameter determines how long to train the model and should be adjusted as needed to avoid over/under-fitting.
+The training job will use the public `stable-diffusion-v2-1-diffuser` checkpoint as a starting point to train a new custom checkpoint on the attached instance data.  The `--images` parameter must contain the same number of images in the regularization dataset or it will error due to a read-only file system.  The first positional argument is the "class prompt" and the second positional argument is the "instance prompt".  The "instance prompt" is the string you will later use on the trained model to ensure the target appears in the generated image.  The `--steps` parameter determines how long to train the model and should be adjusted as needed to avoid over/under-fitting.
 
 The training run should take ~25 minutes and consume ~0.4 credits.  Once it is complete, it will automatically create a checkpoint named `Job - <job name>`, which in this example's case will be `Job - DreamBooth Training`.  Rename the dataset to something more succinct with the following command:
 
@@ -91,7 +91,7 @@ trainml checkpoint attach "dog-checkpoint"
 
 ## Generate Images with the Custom Checkpoint
 
-Once the checkpoint is ready, you can use it to generate new images with the target object inside.  The `inference.py` file in this example repo generates a single image, but could be modified to generate as many images as needed.  First create the output folder:
+Once the checkpoint is ready, you can use it to generate new images of the target object.  The `inference.py` file in this example repo generates a single image, but could be modified to generate as many images as needed.  First create the output folder:
 
 ```
 mkdir -p output
@@ -118,7 +118,7 @@ The inference job should consume ~0.05 credits for a single generation with the 
 
 ### Using the Python SDK 
 
-In a python file setup to run [asyncio](https://docs.python.org/3/library/asyncio.html) code (see the [SDK readme for more details](https://github.com/trainML/trainml-cli)), the above workflow can be replicated using the following commands.
+The same workflow can be implemented directly in python using the [asyncio](https://docs.python.org/3/library/asyncio.html) library and the [trainML SDK](https://github.com/trainML/trainml-cli)).
 
 Create the instance dataset:
 
@@ -210,7 +210,7 @@ async def create_custom_checkpoint():
           source_type="git",
           source_uri="https://github.com/trainML/stable-diffusion-training-example.git",
           checkpoints=[
-              dict(id="stable-diffusion-2-1-diffuser", public=True),
+              dict(id="stable-diffusion-v2-1-diffuser", public=True),
           ],
       )
   )
