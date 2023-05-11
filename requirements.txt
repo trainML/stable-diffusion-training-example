@@ -5,5 +5,4 @@ ftfy
 tensorboard
 modelcards
 datasets
-# diffusers==0.11.1
--e ./diffusers
+diffusers==0.16.1

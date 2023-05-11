@@ -19,21 +19,7 @@ for i in "$@"; do
   esac
 done
 
-
-#cp -r ${TRAINML_DATA_PATH}/* . 
-
 cd diffusers/examples/dreambooth
-
-## Disable accelerate logging and increase verbosity
-sed -i '/import os/aimport sys' train_dreambooth.py
-# sed -i '/import os/aimport logging' train_dreambooth.py
-sed -i 's/logger = get_logger(__name__)/logger = logging.getLogger()/' train_dreambooth.py
-sed -i 's/logger\./logging./' train_dreambooth.py
-sed -i '/logger = logging.getLogger()/alogger.setLevel(logging.INFO)' train_dreambooth.py
-sed -i '/logger = logging.getLogger()/alogger.addHandler(logging.StreamHandler(sys.stderr))' train_dreambooth.py
-sed -i 's/if accelerator.is_local_main_process:/if True:/' train_dreambooth.py
-sed -i 's/disable=not accelerator.is_local_main_process/disable=False/' train_dreambooth.py
-sed -i 's/accelerator.state, main_process_only=False/accelerator.state/' train_dreambooth.py
 
 ## Run training
 python train_dreambooth.py \
